@@ -78,9 +78,22 @@ var Engine = (function(global) {
      * functionality this way (you could just implement collision detection
      * on the entities themselves within your app.js file).
      */
+     function getRandomIntInclusive(min, max) {
+       min = Math.ceil(min);
+       max = Math.floor(max);
+       return Math.floor(Math.random() * (max - min + 1)) + min;
+     }
+
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        if ((Math.random() < 0.03) & (allEnemies.length < 5)) {
+          allEnemies.push(new Enemy(0,
+             -20 + getRandomIntInclusive(1,4)*83,
+             getRandomIntInclusive(100, 250)));
+           }
+        checkCollisions();
+        collectLives();
+        collectScore();
     }
 
     /* This is called by the update function and loops through all of the
@@ -93,6 +106,8 @@ var Engine = (function(global) {
     function updateEntities(dt) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
+            gems.update(dt);
+            lives.update(dt);
         });
         player.update();
     }
@@ -149,6 +164,8 @@ var Engine = (function(global) {
          */
         allEnemies.forEach(function(enemy) {
             enemy.render();
+            gems.render();
+            lives.render();
         });
 
         player.render();
@@ -171,7 +188,19 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png',
+        'images/Gem Blue.png',
+        'images/Gem green.png',
+        'images/Gem orange.png',
+        'images/Heart.png',
+        'images/key.png',
+        'images/Rock.png',
+        'images/Star.png'
+
     ]);
     Resources.onReady(init);
 
