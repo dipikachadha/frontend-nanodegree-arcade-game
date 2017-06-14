@@ -25,8 +25,8 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
-    canvas.width = 505;
-    canvas.height = 606;
+    canvas.width = 606;
+    canvas.height = 730;
     doc.body.appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
@@ -86,14 +86,16 @@ var Engine = (function(global) {
 
     function update(dt) {
         updateEntities(dt);
-        if ((Math.random() < 0.03) & (allEnemies.length < 5)) {
+        if ((Math.random() < 0.04) & (allEnemies.length < 7)) {
           allEnemies.push(new Enemy(0,
              -20 + getRandomIntInclusive(1,4)*83,
              getRandomIntInclusive(100, 250)));
            }
         checkCollisions();
         collectLives();
-        collectScore();
+        collectGems();
+        collectKey();
+        rockColllide();
     }
 
     /* This is called by the update function and loops through all of the
@@ -106,8 +108,6 @@ var Engine = (function(global) {
     function updateEntities(dt) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
-            gems.update(dt);
-            lives.update(dt);
         });
         player.update();
     }
@@ -124,14 +124,15 @@ var Engine = (function(global) {
          */
         var rowImages = [
                 'images/water-block.png',   // Top row is water
-                'images/stone-block.png',   // Row 1 of 3 of stone
-                'images/stone-block.png',   // Row 2 of 3 of stone
-                'images/stone-block.png',   // Row 3 of 3 of stone
+                'images/stone-block.png',   // Row 1 of 4 of stone
+                'images/stone-block.png',   // Row 2 of 4 of stone
+                'images/stone-block.png',   // Row 3 of 4 of stone
+                'images/stone-block.png',   // Row 4 of 4 of stone
                 'images/grass-block.png',   // Row 1 of 2 of grass
                 'images/grass-block.png'    // Row 2 of 2 of grass
             ],
-            numRows = 6,
-            numCols = 5,
+            numRows = 7,
+            numCols = 6,
             row, col;
 
         /* Loop through the number of rows and columns we've defined above
@@ -164,11 +165,25 @@ var Engine = (function(global) {
          */
         allEnemies.forEach(function(enemy) {
             enemy.render();
-            gems.render();
-            lives.render();
         });
 
+        allLives.forEach(function(lives) {
+          lives.render();
+        });
+
+        allGems.forEach(function(gems) {
+          gems.render();
+        });
+
+
+        allRock.forEach(function(rock) {
+  			     rock.render();
+
+  		});
+
+        key.render();
         player.render();
+        lock.render();
     }
 
     /* This function does nothing but it could have been a good place to
@@ -176,6 +191,7 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
+
         // noop
     }
 
@@ -199,7 +215,8 @@ var Engine = (function(global) {
         'images/Heart.png',
         'images/key.png',
         'images/Rock.png',
-        'images/Star.png'
+        'images/Star.png',
+        'images/lock.jpg'
 
     ]);
     Resources.onReady(init);

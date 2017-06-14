@@ -6,57 +6,12 @@ function Enemy(x,y,speed) {
   this.sprite = 'images/enemy-bug.png';
 };
 
-function Gems(x,y) {
-  this.x = x;
-  this.y = y;
-  this.sprite  = 'images/Gem Blue.png';
-};
-
-Gems.prototype.update = function(dt) {
-  var distance = this.speed * dt;
-  x = this.x + distance;
-};
-
-Gems.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y,100,140);
-};
-
-
-var gems = new Gems(101,210);
-
-function Lives(x,y) {
-  this.x = x;
-  this.y = y;
-  this.sprite = 'images/Heart.png';
-};
-
-Lives.prototype.update = function(dt) {
-  var distance = this.speed * dt;
-  x = this.x + distance;
-};
-
-Lives.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y,50,100);
-};
-
-var lives = new Lives(100,250);
-
-
-
-
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
-
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
-
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
 var allEnemies = [];
+
 Enemy.prototype.update = function(dt) {
   var distance = this.speed * dt;
    this.x = this.x + distance;
-   if (this.x > 505) {
+   if (this.x > 606) {
       var i = allEnemies.indexOf(this);
       if (i != -1) {
         allEnemies.splice(i,1);
@@ -69,18 +24,16 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
 function Player(x,y,lives,score) {
   this.x = x;
   this.y = y;
   this.lives = 3;
   this.score = 0;
+  this.key = 0;
   this.sprite = 'images/char-cat-girl.png';
 };
 
-var player  = new Player(200, 400,);
+var player = new Player(200, 400);
 
 Player.prototype.update = function (dt) {
   var distance = this.speed * dt;
@@ -96,6 +49,95 @@ Player.prototype.reset = function() {
    this.y = 400;
 };
 
+Player.prototype.handleInput = function(direction) {
+
+    if (direction === 'up' && this.y > 0) {
+        this.y -= 83;
+    }
+
+    if (direction === 'down' && this.y < 483) {
+        this.y += 83;
+    }
+
+    if (direction === 'right' && this.x < 503) {
+        this.x += 101;
+    }
+
+    if (direction === 'left' && this.x > 0) {
+        this.x -= 101;
+    }
+
+};
+
+
+function Gems(x,y) {
+  this.x = x;
+  this.y = y;
+  this.sprite  = 'images/Gem Blue.png';
+};
+
+Gems.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+var allGems = [new Gems(300,150), new Gems(5,50)];
+
+
+
+function Lives(x,y) {
+  this.x = x;
+  this.y = y;
+  this.sprite = 'images/Heart.png';
+};
+
+Lives.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+var allLives = [new Lives(400,80), new Lives(100, 160)];
+
+
+function Rock(x,y) {
+  this.x = x;
+  this.y = y;
+  this.sprite = 'images/Rock.png';
+};
+
+Rock.prototype.render = function() {
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+var allRock = [new Rock(300,220), new Rock(300,310), new Rock(400,310),
+  new Rock(500,310), new Rock(500,220),];
+
+function Key(x,y) {
+  this.x = x;
+  this.y = y;
+  this.visibility = true;
+  this.sprite = 'images/key.png';
+};
+
+Key.prototype.render = function() {
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+var key = new Key(400,235);
+
+function Lock(x,y) {
+  this.x = x;
+  this.y = y;
+  this.sprite = 'images/lock.jpg';
+};
+
+Lock.prototype.render = function() {
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+var lock = new Lock(120,470);
+// Now write your own player class
+// This class requires an update(), render() and
+// a handleInput() method.
+
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
@@ -107,45 +149,63 @@ Player.prototype.reset = function() {
 // Player.handleInput() method. You don't need to modify this.
 
 
-Player.prototype.handleInput = function(direction) {
-
-    if (direction === 'up' && this.y >50) {
-        this.y -= 83;
-    }
-
-    if (direction === 'down' && this.y <400) {
-        this.y += 83;
-    }
-
-    if (direction === 'right' && this.x <400) {
-        this.x += 101;
-    }
-
-    if (direction === 'left' && this.x > 50) {
-        this.x -= 101;
-    }
-
-};
 
 function checkCollisions() {
   allEnemies.forEach(function(enemy) {
-    if ((Math.abs(player.x - enemy.x) < 40) && (Math.abs(player.y - enemy.y) < 40)) {
+    if ((Math.abs(player.x - enemy.x) < 40) &&
+        (Math.abs(player.y - enemy.y) < 40)) {
       player.reset();
-
+      if (player.lives > 1) {
+        player.lives--;
+      } else {
+        player.lives=3; // Add game-over clause later.
+      }
     }
   });
 };
 
 function collectLives() {
-  // if ((Math.abs(player.x - lives.x) < 40) && (Math.abs(player.y - lives.y) < 20)) {
-  //         this.lives = this.lives + 1;
-  //     }
+  allLives.forEach(function(lives) {
+    if ((Math.abs(player.x - lives.x) < 40) &&
+        (Math.abs(player.y - lives.y) < 20)) {
+            player.lives = player.lives + 1;
+            var j = allLives.indexOf(lives);
+            if (j != -1) {
+              allLives.splice(j,1);
+            }
+    }
+  });
 };
 
-function collectScore() {
-  // if ((Math.abs(player.x - gems.x) < 40) && (Math.abs(player.y - gems.y) < 20)) {
-  //   this.score = this.score + 1;
-  // }
+function collectGems() {
+  allGems.forEach(function(gems) {
+  if ((Math.abs(player.x - gems.x) < 40) &&
+      (Math.abs(player.y - gems.y) < 20)) {
+        player.score = player.score + 100;
+          var k = allGems.indexOf(gems);
+          if(k != -1) {
+            allGems.splice(k,1);
+          }
+    }
+  });
+};
+
+function collectKey() {
+  if ((Math.abs(player.x - key.x) < 40) &&
+      (Math.abs(player.y - key.y) < 20)) {
+        player.key = player.key + 1;
+
+  }
+};
+var allRockLength = allRock.length;
+
+function rockColllide() {
+  allRock.forEach(function(Rock) {
+    if ((Math.abs(player.x - Rock.x) < 40) &&
+      (Math.abs(player.y - Rock.y) < 20)) {
+        
+    }
+  });
 };
 
   document.addEventListener('keyup', function(e) {
