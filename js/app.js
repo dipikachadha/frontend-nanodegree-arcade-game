@@ -30,6 +30,7 @@ function Player(x,y,lives,score) {
   this.lives = 3;
   this.score = 0;
   this.key = 0;
+  this.move = false;
   this.sprite = 'images/char-cat-girl.png';
 };
 
@@ -108,12 +109,11 @@ Rock.prototype.render = function() {
 };
 
 var allRock = [new Rock(300,220), new Rock(300,310), new Rock(400,310),
-  new Rock(500,310), new Rock(500,220),];
+  new Rock(500,310), new Rock(500,220), new Rock(200,60), new Rock(200,-25)];
 
 function Key(x,y) {
   this.x = x;
   this.y = y;
-  this.visibility = true;
   this.sprite = 'images/key.png';
 };
 
@@ -121,19 +121,31 @@ Key.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-var key = new Key(400,235);
+var allKey = [new Key(400,235), new Key(100,60)];
 
 function Lock(x,y) {
   this.x = x;
   this.y = y;
-  this.sprite = 'images/lock.jpg';
+  this.sprite = 'images/Door Tall Closed.png';
 };
 
 Lock.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-var lock = new Lock(120,470);
+var lock = new Lock(100,460);
+
+function Star(x,y) {
+  this.x = x;
+  this.y = y;
+  this.sprite = 'images/Star.png'
+};
+
+Star.prototype.render = function() {
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+var allStar = [new Star(-5,240), new Star(400,150)];
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
@@ -170,9 +182,9 @@ function collectLives() {
         (Math.abs(player.y - lives.y) < 20)) {
             player.lives = player.lives + 1;
             var j = allLives.indexOf(lives);
-            if (j != -1) {
+              if (j != -1) {
               allLives.splice(j,1);
-            }
+              }
     }
   });
 };
@@ -183,7 +195,7 @@ function collectGems() {
       (Math.abs(player.y - gems.y) < 20)) {
         player.score = player.score + 100;
           var k = allGems.indexOf(gems);
-          if(k != -1) {
+            if(k != -1) {
             allGems.splice(k,1);
           }
     }
@@ -191,22 +203,46 @@ function collectGems() {
 };
 
 function collectKey() {
+  allKey.forEach(function(key) {
   if ((Math.abs(player.x - key.x) < 40) &&
       (Math.abs(player.y - key.y) < 20)) {
         player.key = player.key + 1;
-
-  }
-};
-var allRockLength = allRock.length;
-
-function rockColllide() {
-  allRock.forEach(function(Rock) {
-    if ((Math.abs(player.x - Rock.x) < 40) &&
-      (Math.abs(player.y - Rock.y) < 20)) {
-        
+          var m = allKey.indexOf(key);
+            if(m != -1) {
+            allKey.splice(m,1)
+          }
     }
   });
 };
+
+function collectStar() {
+  allStar.forEach(function(Star) {
+  if ((Math.abs(player.x - Star.x) < 40) &&
+      (Math.abs(player.y - Star.y) < 20)) {
+        player.Star = player.Star + 1;
+          var n = allStar.indexOf(Star);
+            if(n != -1) {
+            allStar.splice(n,1)
+          }
+    }
+  });
+};
+// function openDoor() {// how to open door, once the door is opened u won
+//   if ((Math.abs(player.x - key.x) < 40) &&
+//       (Math.abs(player.y - key.y) < 20)) {
+//
+// }
+
+function rockColllide() {
+    allRock.forEach(function(Rock) {
+      if ((Math.abs(Rock.x - player.x) < 40) &&
+          (Math.abs(Rock.y - player.y) < 20)) {
+        player.x  = player.move;
+        Rock.active = true;
+      }
+    });
+  };
+
 
   document.addEventListener('keyup', function(e) {
       var allowedKeys = {

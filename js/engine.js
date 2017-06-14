@@ -96,6 +96,7 @@ var Engine = (function(global) {
         collectGems();
         collectKey();
         rockColllide();
+        collectStar();
     }
 
     /* This is called by the update function and loops through all of the
@@ -178,10 +179,16 @@ var Engine = (function(global) {
 
         allRock.forEach(function(rock) {
   			     rock.render();
-
   		});
 
-        key.render();
+      allKey.forEach(function(key) {
+           key.render();
+      });
+
+      allStar.forEach(function(star) {
+           star.render();
+      });
+
         player.render();
         lock.render();
     }
@@ -216,7 +223,7 @@ var Engine = (function(global) {
         'images/key.png',
         'images/Rock.png',
         'images/Star.png',
-        'images/lock.jpg'
+        'images/Door Tall Closed.png'
 
     ]);
     Resources.onReady(init);
