@@ -198,7 +198,6 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-
         // noop
     }
 
@@ -216,14 +215,14 @@ var Engine = (function(global) {
         'images/char-horn-girl.png',
         'images/char-pink-girl.png',
         'images/char-princess-girl.png',
-        'images/Gem Blue.png',
-        'images/Gem green.png',
-        'images/Gem orange.png',
+        'images/Gem_Blue.png',
+        'images/Gem_green.png',
+        'images/Gem_orange.png',
         'images/Heart.png',
         'images/key.png',
         'images/Rock.png',
         'images/Star.png',
-        'images/Door Tall Closed.png'
+        'images/Door_Tall_Closed.png'
 
     ]);
     Resources.onReady(init);

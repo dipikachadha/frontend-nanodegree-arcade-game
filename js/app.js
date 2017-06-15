@@ -30,7 +30,7 @@ function Player(x,y,lives,score) {
   this.lives = 3;
   this.score = 0;
   this.key = 0;
-  this.move = false;
+  this.move = 0;
   this.sprite = 'images/char-cat-girl.png';
 };
 
@@ -74,7 +74,7 @@ Player.prototype.handleInput = function(direction) {
 function Gems(x,y) {
   this.x = x;
   this.y = y;
-  this.sprite  = 'images/Gem Blue.png';
+  this.sprite  = 'images/Gem_Blue.png';
 };
 
 Gems.prototype.render = function() {
@@ -126,7 +126,7 @@ var allKey = [new Key(400,235), new Key(100,60)];
 function Lock(x,y) {
   this.x = x;
   this.y = y;
-  this.sprite = 'images/Door Tall Closed.png';
+  this.sprite = 'images/Door_Tall_Closed.png';
 };
 
 Lock.prototype.render = function() {
