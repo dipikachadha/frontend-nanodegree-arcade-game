@@ -6,8 +6,6 @@ function Enemy(x,y,speed) {
   this.sprite = 'images/enemy-bug.png';
 };
 
-var allEnemies = [];
-
 Enemy.prototype.update = function(dt) {
   var distance = this.speed * dt;
    this.x = this.x + distance;
@@ -31,10 +29,12 @@ function Player(x,y,lives,score) {
   this.score = 0;
   this.key = 0;
   this.move = 0;
+  this.gems = 0;
+  this.star = 0;
+  this.getXBlock = function () {return Math.floor(this.x/101);}
+  this.getYBlock = function () {return Math.floor((this.y + 83)/83);}
   this.sprite = 'images/char-cat-girl.png';
 };
-
-var player = new Player(200, 400);
 
 Player.prototype.update = function (dt) {
   var distance = this.speed * dt;
@@ -42,7 +42,7 @@ Player.prototype.update = function (dt) {
 };
 
 Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 101, 171);
 };
 
 Player.prototype.reset = function() {
@@ -70,7 +70,6 @@ Player.prototype.handleInput = function(direction) {
 
 };
 
-
 function Gems(x,y) {
   this.x = x;
   this.y = y;
@@ -78,12 +77,8 @@ function Gems(x,y) {
 };
 
 Gems.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 50, 80);
 };
-
-var allGems = [new Gems(300,150), new Gems(5,50)];
-
-
 
 function Lives(x,y) {
   this.x = x;
@@ -92,11 +87,8 @@ function Lives(x,y) {
 };
 
 Lives.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y,50,100);
 };
-
-var allLives = [new Lives(400,80), new Lives(100, 160)];
-
 
 function Rock(x,y) {
   this.x = x;
@@ -108,9 +100,6 @@ Rock.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-var allRock = [new Rock(300,220), new Rock(300,310), new Rock(400,310),
-  new Rock(500,310), new Rock(500,220), new Rock(200,60), new Rock(200,-25)];
-
 function Key(x,y) {
   this.x = x;
   this.y = y;
@@ -121,19 +110,16 @@ Key.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-var allKey = [new Key(400,235), new Key(100,60)];
-
 function Lock(x,y) {
   this.x = x;
   this.y = y;
+  this.open = false;
   this.sprite = 'images/Door_Tall_Closed.png';
 };
 
 Lock.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
-
-var lock = new Lock(100,460);
 
 function Star(x,y) {
   this.x = x;
@@ -145,36 +131,35 @@ Star.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+
+var player = new Player(202, 400);
+var allEnemies = [];
+var allGems = [new Gems(327, 195), new Gems(25, 118)];
+var allLives = [new Lives(400,80), new Lives(100, 160)];
+var allRock = [new Rock(300,220), new Rock(300,310), new Rock(400,310),
+new Rock(500,310), new Rock(500,220), new Rock(200,60), new Rock(200,-25)];
+var allKey = [new Key(400,235), new Key(100,60)];
+var lock = new Lock(100,460);
 var allStar = [new Star(-5,240), new Star(400,150)];
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
-
-
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
-
-
-
-// This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
-
-
 
 function checkCollisions() {
   allEnemies.forEach(function(enemy) {
     if ((Math.abs(player.x - enemy.x) < 40) &&
         (Math.abs(player.y - enemy.y) < 40)) {
       player.reset();
-      if (player.lives > 1) {
+      if (player.lives > 0) {
         player.lives--;
-      } else {
-        player.lives=3; // Add game-over clause later.
+        alert("Yous have" + player.lives +  "lives left");
+      } else { alert ("Game Over")
+        }
       }
-    }
   });
 };
+
+function isNearPlayer( obj ) {
+  return ((Math.abs(player.x - obj.x) < 50) &&
+          (Math.abs(player.y - obj.y) < 40))
+}
 
 function collectLives() {
   allLives.forEach(function(lives) {
@@ -191,8 +176,7 @@ function collectLives() {
 
 function collectGems() {
   allGems.forEach(function(gems) {
-  if ((Math.abs(player.x - gems.x) < 40) &&
-      (Math.abs(player.y - gems.y) < 20)) {
+  if (isNearPlayer( gems )) {
         player.score = player.score + 100;
           var k = allGems.indexOf(gems);
             if(k != -1) {
@@ -227,18 +211,22 @@ function collectStar() {
     }
   });
 };
-// function openDoor() {// how to open door, once the door is opened u won
-//   if ((Math.abs(player.x - key.x) < 40) &&
-//       (Math.abs(player.y - key.y) < 20)) {
-//
-// }
+function openDoor() {
+  if ((Math.abs(player.x - Lock.x) < 40) &&
+      (Math.abs(player.y - Lock.y) < 20)) {
+    if ((player.key == 2) && (player.gems == 2) && (player.star == 2)) {
+      Lock.open = true;
+      alert("You Won!");
+    }
+  }
+};
 
 function rockColllide() {
     allRock.forEach(function(Rock) {
       if ((Math.abs(Rock.x - player.x) < 40) &&
           (Math.abs(Rock.y - player.y) < 20)) {
-        player.x  = player.move;
-        Rock.active = true;
+        player.x = Rock.x;
+        // Rock.active = true;
       }
     });
   };
