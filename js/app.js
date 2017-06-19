@@ -32,7 +32,7 @@ function Player(x,y,lives,score) {
   this.gems = 0;
   this.star = 0;
   this.getXBlock = function () {return Math.floor(this.x/101);}
-  this.getYBlock = function () {return Math.floor((this.y + 83)/83);}
+  this.getYBlock = function () {return Math.floor((this.y + 30)/83);}
   this.sprite = 'images/char-cat-girl.png';
 };
 
@@ -46,8 +46,8 @@ Player.prototype.render = function() {
 };
 
 Player.prototype.reset = function() {
-   this.x = 200;
-   this.y = 400;
+   this.x = 202;
+   this.y = 385;
 };
 
 Player.prototype.handleInput = function(direction) {
@@ -73,6 +73,8 @@ Player.prototype.handleInput = function(direction) {
 function Gems(x,y) {
   this.x = x;
   this.y = y;
+  this.getXBlock = function () {return Math.floor(this.x/101)}
+  this.getYBlock = function () {return Math.floor(this.y/83)}
   this.sprite  = 'images/Gem_Blue.png';
 };
 
@@ -132,9 +134,9 @@ Star.prototype.render = function() {
 };
 
 
-var player = new Player(202, 400);
+var player = new Player(202, 385);
 var allEnemies = [];
-var allGems = [new Gems(327, 195), new Gems(25, 118)];
+var allGems = [new Gems(327, 200), new Gems(25, 118)];
 var allLives = [new Lives(400,80), new Lives(100, 160)];
 var allRock = [new Rock(300,220), new Rock(300,310), new Rock(400,310),
 new Rock(500,310), new Rock(500,220), new Rock(200,60), new Rock(200,-25)];
@@ -149,7 +151,7 @@ function checkCollisions() {
       player.reset();
       if (player.lives > 0) {
         player.lives--;
-        alert("Yous have" + player.lives +  "lives left");
+        alert("You have" + player.lives +  "lives left");
       } else { alert ("Game Over")
         }
       }
@@ -177,11 +179,13 @@ function collectLives() {
 function collectGems() {
   allGems.forEach(function(gems) {
   if (isNearPlayer( gems )) {
+      if((player.getXBlock() == gems.getXBlock()) && (player.getYBlock() == gems.getYBlock())) {
         player.score = player.score + 100;
           var k = allGems.indexOf(gems);
             if(k != -1) {
             allGems.splice(k,1);
           }
+      }
     }
   });
 };
