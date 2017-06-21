@@ -162,9 +162,13 @@ var Engine = (function(global) {
    * on your enemy and player entities within app.js
    */
   function renderEntities() {
+    if (player.y < 83) {
+      ctx.clearRect(0,0,707,50);      
+    }
     /* Loop through all of the objects within the allEnemies array and call
      * the render function you have defined.
      */
+
     allEnemies.forEach(function(enemy) {
       enemy.render();
     });

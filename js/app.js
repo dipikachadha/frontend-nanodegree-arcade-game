@@ -42,6 +42,11 @@ Player.prototype.update = function (dt) {
 };
 
 Player.prototype.render = function() {
+  // if (this.y < 50) {
+  //   for (col = 0; col < 7; col++) {
+  //     ctx.drawImage(Resources.get('images/water-block.png'), col * 101, 0);
+  //   }
+  // }
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 101, 171);
 };
 
@@ -56,7 +61,7 @@ Player.prototype.handleInput = function(direction) {
     this.y -= 83;
   }
 
-  if (direction === 'down' && this.y < 483) {
+  if (direction === 'down' && this.y < 483 && !rockColllide(this.x, this.y+83)) {
     this.y += 83;
   }
 
@@ -64,7 +69,7 @@ Player.prototype.handleInput = function(direction) {
     this.x += 101;
   }
 
-  if (direction === 'left' && this.x > 0 && !rockColllide()) {
+  if (direction === 'left' && this.x > 0 && !rockColllide(this.x - 101, this.y)) {
     this.x -= 101;
   }
 
