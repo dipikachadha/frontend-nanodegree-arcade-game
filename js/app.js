@@ -8,18 +8,18 @@ function Enemy(x,y,speed) {
 
 Enemy.prototype.update = function(dt) {
   var distance = this.speed * dt;
-   this.x = this.x + distance;
-   if (this.x > 606) {
-      var i = allEnemies.indexOf(this);
-      if (i != -1) {
-        allEnemies.splice(i,1);
-      }
+  this.x = this.x + distance;
+  if (this.x > 606) {
+    var i = allEnemies.indexOf(this);
+    if (i != -1) {
+      allEnemies.splice(i,1);
+    }
   }
- };
+};
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
 function Player(x,y,lives,score) {
@@ -42,31 +42,31 @@ Player.prototype.update = function (dt) {
 };
 
 Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 101, 171);
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 101, 171);
 };
 
 Player.prototype.reset = function() {
-   this.x = 202;
-   this.y = 385;
+  this.x = 202;
+  this.y = 385;
 };
 
 Player.prototype.handleInput = function(direction) {
 
-    if (direction === 'up' && this.y > 0) {
-        this.y -= 83;
-    }
+  if (direction === 'up' && this.y > 0 && !rockColllide(this.x, this.y-83)) {
+    this.y -= 83;
+  }
 
-    if (direction === 'down' && this.y < 483) {
-        this.y += 83;
-    }
+  if (direction === 'down' && this.y < 483) {
+    this.y += 83;
+  }
 
-    if (direction === 'right' && this.x < 503) {
-        this.x += 101;
-    }
+  if (direction === 'right' && this.x < 503 && !rockColllide(this.x + 101, this.y)) {
+    this.x += 101;
+  }
 
-    if (direction === 'left' && this.x > 0) {
-        this.x -= 101;
-    }
+  if (direction === 'left' && this.x > 0 && !rockColllide()) {
+    this.x -= 101;
+  }
 
 };
 
@@ -79,17 +79,19 @@ function Gems(x,y) {
 };
 
 Gems.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 50, 80);
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 50, 80);
 };
 
 function Lives(x,y) {
   this.x = x;
   this.y = y;
+  this.getXBlock = function () {return Math.floor(this.x/101)};
+  this.getYBlock = function () {return Math.floor(this.y/83)};
   this.sprite = 'images/Heart.png';
 };
 
 Lives.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y,50,100);
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y,50,100);
 };
 
 function Rock(x,y) {
@@ -105,44 +107,39 @@ Rock.prototype.render = function() {
 function Key(x,y) {
   this.x = x;
   this.y = y;
+  this.getXBlock = function () {return Math.floor(this.x/101)};
+  this.getYBlock = function () {return Math.floor(this.y/83)};
   this.sprite = 'images/key.png';
 };
 
 Key.prototype.render = function() {
-  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y,75,100);
 };
 
 function Lock(x,y) {
   this.x = x;
   this.y = y;
   this.open = false;
+  this.getXBlock = function () {return Math.floor(this.x/101)};
+  this.getYBlock = function () {return Math.floor(this.y/83)};
   this.sprite = 'images/Door_Tall_Closed.png';
 };
 
 Lock.prototype.render = function() {
-  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y,100,98);
 };
 
 function Star(x,y) {
   this.x = x;
   this.y = y;
+  this.getXBlock = function () {return Math.floor(this.x/101)};
+  this.getYBlock = function () {return Math.floor(this.y/83)};
   this.sprite = 'images/Star.png'
 };
 
 Star.prototype.render = function() {
-  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y,75,100);
 };
-
-
-var player = new Player(202, 385);
-var allEnemies = [];
-var allGems = [new Gems(327, 200), new Gems(25, 118)];
-var allLives = [new Lives(400,80), new Lives(100, 160)];
-var allRock = [new Rock(300,220), new Rock(300,310), new Rock(400,310),
-new Rock(500,310), new Rock(500,220), new Rock(200,60), new Rock(200,-25)];
-var allKey = [new Key(400,235), new Key(100,60)];
-var lock = new Lock(100,460);
-var allStar = [new Star(-5,240), new Star(400,150)];
 
 function checkCollisions() {
   allEnemies.forEach(function(enemy) {
@@ -153,38 +150,29 @@ function checkCollisions() {
         player.lives--;
         alert("You have" + player.lives +  "lives left");
       } else { alert ("Game Over")
-        }
-      }
+             }
+    }
   });
 };
 
-function isNearPlayer( obj ) {
-  return ((Math.abs(player.x - obj.x) < 50) &&
-          (Math.abs(player.y - obj.y) < 40))
-}
-
 function collectLives() {
   allLives.forEach(function(lives) {
-    if ((Math.abs(player.x - lives.x) < 40) &&
-        (Math.abs(player.y - lives.y) < 20)) {
-            player.lives = player.lives + 1;
-            var j = allLives.indexOf(lives);
-              if (j != -1) {
-              allLives.splice(j,1);
-              }
+    if((player.getXBlock() == lives.getXBlock()) && (player.getYBlock() == lives.getYBlock())) {
+      var j = allLives.indexOf(lives);
+      if (j != -1) {
+        allLives.splice(j,1);
+      }
     }
   });
 };
 
 function collectGems() {
   allGems.forEach(function(gems) {
-  if (isNearPlayer( gems )) {
-      if((player.getXBlock() == gems.getXBlock()) && (player.getYBlock() == gems.getYBlock())) {
-        player.score = player.score + 100;
-          var k = allGems.indexOf(gems);
-            if(k != -1) {
-            allGems.splice(k,1);
-          }
+    if((player.getXBlock() == gems.getXBlock()) && (player.getYBlock() == gems.getYBlock())) {
+      player.score = player.score + 100;
+      var k = allGems.indexOf(gems);
+      if(k != -1) {
+        allGems.splice(k,1);
       }
     }
   });
@@ -192,29 +180,28 @@ function collectGems() {
 
 function collectKey() {
   allKey.forEach(function(key) {
-  if ((Math.abs(player.x - key.x) < 40) &&
-      (Math.abs(player.y - key.y) < 20)) {
-        player.key = player.key + 1;
-          var m = allKey.indexOf(key);
-            if(m != -1) {
-            allKey.splice(m,1)
-          }
+    if((player.getXBlock() == key.getXBlock()) && (player.getYBlock() == key.getYBlock())){
+      player.key = player.key + 1;
+      var m = allKey.indexOf(key);
+      if(m != -1) {
+        allKey.splice(m,1)
+      }
     }
   });
 };
 
 function collectStar() {
   allStar.forEach(function(Star) {
-  if ((Math.abs(player.x - Star.x) < 40) &&
-      (Math.abs(player.y - Star.y) < 20)) {
-        player.Star = player.Star + 1;
-          var n = allStar.indexOf(Star);
-            if(n != -1) {
-            allStar.splice(n,1)
-          }
+    if((player.getXBlock() == Star.getXBlock()) && (player.getYBlock() == Star.getYBlock())) {
+      player.Star = player.Star + 1;
+      var n = allStar.indexOf(Star);
+      if(n != -1) {
+        allStar.splice(n,1)
+      }
     }
   });
 };
+
 function openDoor() {
   if ((Math.abs(player.x - Lock.x) < 40) &&
       (Math.abs(player.y - Lock.y) < 20)) {
@@ -225,24 +212,35 @@ function openDoor() {
   }
 };
 
-function rockColllide() {
-    allRock.forEach(function(Rock) {
-      if ((Math.abs(Rock.x - player.x) < 40) &&
-          (Math.abs(Rock.y - player.y) < 20)) {
-        player.x = Rock.x;
-        // Rock.active = true;
-      }
-    });
+function rockColllide(xCoordinate, yCoordinate) {
+  return (
+      allRock.some(function (rock) {
+        return ((Math.abs(rock.x - xCoordinate) < 40) &&
+                (Math.abs(rock.y - yCoordinate) < 20))
+              }
+            )
+          );
+};
+
+
+var player = new Player(202, 385);
+var allEnemies = [];
+var allGems = [new Gems(327, 200), new Gems(25, 118)];
+var allLives = [new Lives(527,120), new Lives(227, 285)];
+var allRock = [new Rock(300,220), new Rock(300,310), new Rock(400,310),
+               new Rock(500,310), new Rock(500,220), new Rock(200,60),
+               new Rock(200,-25)];
+var allKey = [new Key(420,275), new Key(118,30)];
+var lock = new Lock(100,455);
+var allStar = [new Star(110,195), new Star(410,115)];
+
+document.addEventListener('keyup', function(e) {
+  var allowedKeys = {
+    37: 'left',
+    38: 'up',
+    39: 'right',
+    40: 'down'
   };
 
-
-  document.addEventListener('keyup', function(e) {
-      var allowedKeys = {
-          37: 'left',
-          38: 'up',
-          39: 'right',
-          40: 'down'
-        };
-
-    player.handleInput(allowedKeys[e.keyCode]);
-  });
+  player.handleInput(allowedKeys[e.keyCode]);
+});
