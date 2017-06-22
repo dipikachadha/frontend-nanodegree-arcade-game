@@ -22,7 +22,7 @@ Enemy.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-function Player(x,y,lives,score) {
+function Player(x,y,lives,key,gems,star) {
   this.x = x;
   this.y = y;
   this.lives = 3;
