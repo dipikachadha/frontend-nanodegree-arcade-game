@@ -86,7 +86,7 @@ var Engine = (function(global) {
 
   function update(dt) {
     updateEntities(dt);
-    if ((Math.random() < 0.04) & (allEnemies.length < 7)) {
+    if ((Math.random() < 0.05) & (allEnemies.length < 7)) {
       allEnemies.push(
         new Enemy(0,
                   -20 + getRandomIntInclusive(1,4)*83,
@@ -98,6 +98,7 @@ var Engine = (function(global) {
     collectKey();
     rockColllide();
     collectStar();
+    gameWon();
   }
 
   /* This is called by the update function and loops through all of the
@@ -162,9 +163,7 @@ var Engine = (function(global) {
    * on your enemy and player entities within app.js
    */
   function renderEntities() {
-    if (player.y < 83) {
-      ctx.clearRect(0,0,707,50);      
-    }
+    ctx.clearRect(0,0,707,50);
     /* Loop through all of the objects within the allEnemies array and call
      * the render function you have defined.
      */
@@ -195,7 +194,6 @@ var Engine = (function(global) {
     });
 
     player.render();
-    lock.render();
   }
 
   /* This function does nothing but it could have been a good place to

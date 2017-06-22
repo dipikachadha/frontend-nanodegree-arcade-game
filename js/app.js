@@ -26,9 +26,7 @@ function Player(x,y,lives,score) {
   this.x = x;
   this.y = y;
   this.lives = 3;
-  this.score = 0;
   this.key = 0;
-  this.move = 0;
   this.gems = 0;
   this.star = 0;
   this.getXBlock = function () {return Math.floor(this.x/101);}
@@ -42,11 +40,6 @@ Player.prototype.update = function (dt) {
 };
 
 Player.prototype.render = function() {
-  // if (this.y < 50) {
-  //   for (col = 0; col < 7; col++) {
-  //     ctx.drawImage(Resources.get('images/water-block.png'), col * 101, 0);
-  //   }
-  // }
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 101, 171);
 };
 
@@ -61,11 +54,11 @@ Player.prototype.handleInput = function(direction) {
     this.y -= 83;
   }
 
-  if (direction === 'down' && this.y < 483 && !rockColllide(this.x, this.y+83)) {
+  if (direction === 'down' && this.y < 468 && !rockColllide(this.x, this.y+83)) {
     this.y += 83;
   }
 
-  if (direction === 'right' && this.x < 503 && !rockColllide(this.x + 101, this.y)) {
+  if (direction === 'right' && this.x < 505 && !rockColllide(this.x + 101, this.y)) {
     this.x += 101;
   }
 
@@ -121,18 +114,6 @@ Key.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y,75,100);
 };
 
-function Lock(x,y) {
-  this.x = x;
-  this.y = y;
-  this.open = false;
-  this.getXBlock = function () {return Math.floor(this.x/101)};
-  this.getYBlock = function () {return Math.floor(this.y/83)};
-  this.sprite = 'images/Door_Tall_Closed.png';
-};
-
-Lock.prototype.render = function() {
-  ctx.drawImage(Resources.get(this.sprite), this.x, this.y,100,98);
-};
 
 function Star(x,y) {
   this.x = x;
@@ -146,19 +127,23 @@ Star.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y,75,100);
 };
 
+
 function checkCollisions() {
   allEnemies.forEach(function(enemy) {
     if ((Math.abs(player.x - enemy.x) < 40) &&
         (Math.abs(player.y - enemy.y) < 40)) {
       player.reset();
-      if (player.lives > 0) {
+      if (player.lives > 1) {
         player.lives--;
-        alert("You have" + player.lives +  "lives left");
-      } else { alert ("Game Over")
-             }
+        alert("You have " + player.lives +  " live(s) left");
+      } else {
+        alert ("Game Over");
+        gameReset();
+      }
     }
   });
 };
+
 
 function collectLives() {
   allLives.forEach(function(lives) {
@@ -171,10 +156,11 @@ function collectLives() {
   });
 };
 
+
 function collectGems() {
   allGems.forEach(function(gems) {
     if((player.getXBlock() == gems.getXBlock()) && (player.getYBlock() == gems.getYBlock())) {
-      player.score = player.score + 100;
+      player.gems++;
       var k = allGems.indexOf(gems);
       if(k != -1) {
         allGems.splice(k,1);
@@ -182,6 +168,7 @@ function collectGems() {
     }
   });
 };
+
 
 function collectKey() {
   allKey.forEach(function(key) {
@@ -195,27 +182,30 @@ function collectKey() {
   });
 };
 
+
 function collectStar() {
   allStar.forEach(function(Star) {
     if((player.getXBlock() == Star.getXBlock()) && (player.getYBlock() == Star.getYBlock())) {
-      player.Star = player.Star + 1;
+      player.star++;
       var n = allStar.indexOf(Star);
       if(n != -1) {
-        allStar.splice(n,1)
+        allStar.splice(n,1);
       }
     }
   });
 };
 
-function openDoor() {
-  if ((Math.abs(player.x - Lock.x) < 40) &&
-      (Math.abs(player.y - Lock.y) < 20)) {
-    if ((player.key == 2) && (player.gems == 2) && (player.star == 2)) {
-      Lock.open = true;
+
+function gameWon() {
+  if (!player.wonGame && (player.key == 2) && (player.gems == 2) &&
+      (player.star == 2) && (player.getXBlock() == 0) &&
+      (player.getYBlock() == 0)) {
       alert("You Won!");
-    }
+      player.wonGame = 1;
+      gameReset();
   }
 };
+
 
 function rockColllide(xCoordinate, yCoordinate) {
   return (
@@ -228,17 +218,20 @@ function rockColllide(xCoordinate, yCoordinate) {
 };
 
 
-var player = new Player(202, 385);
-var allEnemies = [];
-var allGems = [new Gems(327, 200), new Gems(25, 118)];
-var allLives = [new Lives(527,120), new Lives(227, 285)];
-var allRock = [new Rock(300,220), new Rock(300,310), new Rock(400,310),
-               new Rock(500,310), new Rock(500,220), new Rock(200,60),
-               new Rock(200,-25)];
-var allKey = [new Key(420,275), new Key(118,30)];
-var lock = new Lock(100,455);
-var allStar = [new Star(110,195), new Star(410,115)];
+function gameReset(global) {
+  player = new Player(202, 385);
+  allEnemies = [];
+  allGems = [new Gems(327, 200), new Gems(25, 118)];
+  allLives = [new Lives(527,120), new Lives(227, 285)];
+  allRock = [new Rock(300,220), new Rock(400,140), new Rock(400,310),
+                 new Rock(500,310), new Rock(500,220), new Rock(200,60),
+                 new Rock(200,-25)];
+  allKey = [new Key(520,190), new Key(118,30)];
+  allStar = [new Star(110,195), new Star(410,115)];
+}
 
+var player, allEnemies, allGems, allLives, allRock, allKey, allStar;
+gameReset();
 document.addEventListener('keyup', function(e) {
   var allowedKeys = {
     37: 'left',
